@@ -1,9 +1,10 @@
-import time
-from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from popup import show_popup
+from PySide6.QtCore import QObject, Signal
 
-SCREENSHOTS_DIR = "/home/ebenezer/Pictures/Screenshots"
+class ScreenshotSignal(QObject):
+    screenshot = Signal(str)
+
+signal_bus = ScreenshotSignal()
 
 class ScreenshotHandler(FileSystemEventHandler):
 
@@ -12,18 +13,4 @@ class ScreenshotHandler(FileSystemEventHandler):
             return
 
         if event.src_path.lower().endswith(".png"):
-            show_popup(event.src_path)
-
-def start_watcher():
-    event_handler = ScreenshotHandler()
-    observer = Observer()
-    observer.schedule(event_handler, SCREENSHOTS_DIR, recursive=False)
-    observer.start()
-
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-
-    observer.join()
+            signal_bus.screenshot.emit(event.src_path)
