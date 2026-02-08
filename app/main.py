@@ -10,31 +10,56 @@ from popup import Popup
 
 SCREENSHOTS_DIR = "/home/ebenezer/Pictures/Screenshots"
 
-def start_watcher():
-    try:
-        observer = Observer()
-        observer.schedule(ScreenshotHandler(), SCREENSHOTS_DIR, recursive=False)
-        observer.start()
-        print("Watcher staretd in:", SCREENSHOTS_DIR)
+class PopupManager:
+    def __init__(self):
+        self.queue = []
+        self.active = False
 
+    def enqueue(self, path):
+        self.queue.append(path)
+        self.process()
+
+    def process(self):
+        if self.active or not self.queue:
+            return
+
+        self.active = True
+        path = self.queue.pop(0)
+
+        self.popup = Popup(path)
+        self.popup.destroyed.connect(self.on_close)
+        self.popup.show()
+
+    def on_close(self):
+        self.active = False
+        self.process()
+
+def start_watcher():
+    observer = Observer()
+    observer.schedule(ScreenshotHandler(), SCREENSHOTS_DIR, recursive=False)
+    observer.start()
+    print("Watcher ativo:", SCREENSHOTS_DIR)
+
+    try:
         while True:
             time.sleep(1)
-    
-    except Exception as e:
-        print("Error in watcher thread:" e)
+    except KeyboardInterrupt:
+        observer.stop()
+
+    observer.join()
 
 if __name__ == "__main__":
     init_db()
 
     app = QApplication(sys.argv)
 
-    def open_popup(path):
-        popup = Popup(path)
-        popup.show()
+    manager = PopupManager()
+    signal_bus.screenshot_ready.connect(manager.enqueue)
 
-    signal_bus.screenshot.connect(open_popup)
-
-    watcher_thread = threading.Thread(target=start_watcher, daemon=True)
+    watcher_thread = threading.Thread(
+        target=start_watcher,
+        daemon=True
+    )
     watcher_thread.start()
 
     sys.exit(app.exec())
