@@ -34,12 +34,12 @@ class AreasView(QWidget):
 
         self.add_button.clicked.connect(self.add_area)
         self.remove_button.clicked.connect(self.remove_area)
-        self.list_widget.itemDubleClick.connect(self.open_discipline)
 
         self.load_areas()
 
     def load_areas(self):
         self.list_widget.clear()
+        self.list_widget.itemDubleClick.connect(self.open_discipline)
         areas = Area.list_all()
 
         for area_id, name in areas:
