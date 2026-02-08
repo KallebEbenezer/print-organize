@@ -1,5 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
+
 from database import init_db
 from ui.areas_view import AreasView
 
