@@ -1,10 +1,12 @@
 import sys
-from PySide6.QtWidgets import QApplication, QLabel
+from PySide6.QtWidgets import QApplication
+from database import init_db
+from ui.areas_view import AreasView
 
-app = QApplication(sys.argv)
+if __name__ == "__main__":
+    init_db()
 
-label = QLabel("Print Auto Save - App iniciado")
-label.resize(300, 100)
-label.show()
-
-sys.exit(app.exec())
+    app = QApplication(sys.argv)
+    window = AreasView()
+    window.show()
+    sys.exit(app.exec())
