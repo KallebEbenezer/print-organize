@@ -11,17 +11,17 @@ from popup import Popup
 SCREENSHOTS_DIR = "/home/ebenezer/Pictures/Screenshots"
 
 def start_watcher():
-    observer = Observer()
-    observer.schedule(ScreenshotHandler(), SCREENSHOTS_DIR, recursive=False)
-    observer.start()
-
     try:
+        observer = Observer()
+        observer.schedule(ScreenshotHandler(), SCREENSHOTS_DIR, recursive=False)
+        observer.start()
+        print("Watcher staretd in:", SCREENSHOTS_DIR)
+
         while True:
             time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-
-    observer.join()
+    
+    except Exception as e:
+        print("Error in watcher thread:" e)
 
 if __name__ == "__main__":
     init_db()
