@@ -1,39 +1,25 @@
-from PySide6.QtWidgets import (
-    QApplication,
-    QWidget,
-    QVBoxLayout,
-    QPushButton,
-    QLabel
-)
-import sys
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 import shutil
 from models import Area
 
 BASE_SAVE_DIR = "/home/ebenezer/Documents/QUESTOES"
 
-def show_popup(file_path: str):
-    app = QApplication.instance()
-    if not app:
-        app = QApplication(sys.argv)
+class Popup(QWidget):
 
-    window = QWidget()
-    window.setWindowTitle("Salvar print em:")
+    def __init__(self, file_path: str):
+        super().__init__()
+        self.file_path = file_path
+        self.setWindowTitle("Salvar print em:")
 
-    layout = QVBoxLayout(window)
-    layout.addWidget(QLabel("Escolha a área:"))
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("Escolha a área:"))
 
-    areas = Area.list_all()
+        for area_id, name in Area.list_all():
+            btn = QPushButton(name)
+            btn.clicked.connect(lambda _, n=name: self.save(n))
+            layout.addWidget(btn)
 
-    for area_id, name in areas:
-        btn = QPushButton(name)
-
-        def handler(_, area=name):
-            dest = f"{BASE_SAVE_DIR}/{area}"
-            shutil.move(file_path, dest)
-            window.close()
-
-        btn.clicked.connect(handler)
-        layout.addWidget(btn)
-
-    window.show()
-    app.exec()
+    def save(self, area_name):
+        dest = f"{BASE_SAVE_DIR}/{area_name}"
+        shutil.move(self.file_path, dest)
+        self.close()
