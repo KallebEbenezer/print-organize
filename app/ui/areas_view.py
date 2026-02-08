@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 )
 
 from models import Area
+from ui.disciplines_view import DisciplinesView
 
 class AreasView(QWidget):
 
@@ -78,3 +79,10 @@ class AreasView(QWidget):
         if confirm == QMessageBox.Yes:
             Area.delete(area_id)
             self.load_areas()
+    
+    def open_disciplines(self, item):
+        area_id = int(item.text().split(" - ")[0])
+        area_name = item.text().split(" - ")[1]
+
+        self.disciplines_window = DisciplinesView(area_id, area_name)
+        self.disciplines_window.show()
