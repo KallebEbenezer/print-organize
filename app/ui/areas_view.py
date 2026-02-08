@@ -34,6 +34,7 @@ class AreasView(QWidget):
 
         self.add_button.clicked.connect(self.add_area)
         self.remove_button.clicked.connect(self.remove_area)
+        self.list_widget.itemDubleClick.connect(self.open_discipline)
 
         self.load_areas()
 
